@@ -1,21 +1,34 @@
 pipeline {
-    agent any 
+    agent any
     tools {
-        maven "Maven"
-    
+        Maven 
     }
     stages {
-        stage('Compile ') { 
-            steps {
-                // Run Maven on a Unix agent.
-                sh "javac Demo.java"
+        stage("version of software"){
+            steps{
+                sh "java --version"
+                sh "mvn --version"
+                sh "docker --version"
+                sh "docker-compose --version"
             }
         }
-        stage('run') { 
-            
-            steps {
-                sh "java Demo"
+        stage("Build the project"){
+            steps{
+                sh "mvn clean"
+                sh "mvn package"
             }
         }
+        stage("run the docker containers"){
+            steps{
+                sh "docker-compose down"
+                sh "docker-compose up --build -d"       
+            }
         }
+        stage("Check images and runnign containers"){
+            steps{
+                sh "docker images"
+                sh "docker ps"       
+            }
+        }
+    }
 }
